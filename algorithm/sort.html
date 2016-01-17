@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
+    </head>
+    <body>
+        <div id = "number">
+</div>
+       <div id = "sort">
+</div> 
+    </body>
+</html>
+
+<script>
+    function Sort(){
+        
+        this.no = [];
+        this.temp=[];
+        
+    }
+    Sort.prototype.set_array = function(arr){
+        this.no = arr;
+        
+    
+   }
+    Sort.prototype.printnumbers = function(){
+        var str = '';
+        self = this;
+        $.each(self.no,function(key,value){
+            str = str + value;
+        });
+        $("#number").append(str);
+ 
+    }
+    Sort.prototype.Sort_no = function(){
+        self = this;
+        var len = self.no.length;
+        for(var i=0;i<=len;i++){
+            for(var j=1;j<=len;j++){
+                if(self.no[j-1]>self.no[j]){
+                    var temp = self.no[j-1];
+                    self.no[j-1]=self.no[j];
+                    self.no[j]=temp;
+                }
+            }
+        }
+        
+         $("#sort").append(self.no.join());
+    }
+    Sort.prototype.prime_no = function(){
+       
+    
+   }
+    $(document).ready(function(){
+        var sort = new Sort();
+        sort.set_array([2,4,1,5,8,19,12]);
+        sort.printnumbers();
+        sort.set_array([2,4,1,5,8,19,12]);
+        sort.Sort_no();
+    });
+</script>
