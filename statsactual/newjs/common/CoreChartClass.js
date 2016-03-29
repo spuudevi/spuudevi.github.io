@@ -848,8 +848,8 @@ get_tab_title :function(id){
                     }
                 }
                 
-                month_dates_x_axis.reverse();//reverse the array for dates earlier to later @potluri
-                month_dates_x_axis_actual_on_graph.reverse();//reverse the array for dates earlier to later @potluri
+                month_dates_x_axis.reverse();//reverse the array for dates earlier to later @SDevi
+                month_dates_x_axis_actual_on_graph.reverse();//reverse the array for dates earlier to later @SDevi
             },
             
                 calculate_months_xaxis_isr :
@@ -876,15 +876,15 @@ get_tab_title :function(id){
 //                }
           //      console.log(posted_data.year);
             //  console.log(month_dates_x_axis);
-                month_dates_x_axis.reverse();//reverse the array for dates earlier to later @potluri
-                month_dates_x_axis_actual_on_graph.reverse();//reverse the array for dates earlier to later @potluri
+                month_dates_x_axis.reverse();//reverse the array for dates earlier to later @SDevi
+                month_dates_x_axis_actual_on_graph.reverse();//reverse the array for dates earlier to later @SDevi
             },
 
             calculate_months_xaxis_previous_in_pagination :
                     function(posted_data, dates, month_dates_x_axis, month_dates_x_axis_actual_on_graph,
                         usagedates) {
 
-                month_dates_x_axis.reverse();//reverse the array for dates earlier to later @potluri
+                month_dates_x_axis.reverse();//reverse the array for dates earlier to later @SDevi
                 month_dates_x_axis_actual_on_graph.reverse();
                 for (var i = dates.indexOf(posted_data.year); i > dates.indexOf(posted_data.year) - this.prev_next_months_count; i--) {
                     if (dates[i]) {
@@ -904,8 +904,8 @@ get_tab_title :function(id){
                     }
                 }
                    
-                month_dates_x_axis.reverse();//reverse the array for dates earlier to later @potluri
-                month_dates_x_axis_actual_on_graph.reverse();//reverse the array for dates earlier to later @potluri
+                month_dates_x_axis.reverse();//reverse the array for dates earlier to later @SDevi
+                month_dates_x_axis_actual_on_graph.reverse();//reverse the array for dates earlier to later @SDevi
                 month_dates_x_axis.splice(this.num_of_months_to_show, Number.MAX_VALUE);
                 month_dates_x_axis_actual_on_graph.splice(this.num_of_months_to_show, Number.MAX_VALUE);
 
@@ -916,7 +916,7 @@ get_tab_title :function(id){
             calculate_months_xaxis_next_in_pagination : function(posted_data, enddate, dates, month_dates_x_axis,
             month_dates_x_axis_actual_on_graph, usagedates) {
 //console.log(usagedates);
-                            //        month_dates_x_axis.reverse();//reverse the array for dates earlier to later @potluri
+                            //        month_dates_x_axis.reverse();//reverse the array for dates earlier to later @SDevi
     //            month_dates_x_axis_actual_on_graph.reverse();
                 for (var i = dates.indexOf(posted_data.year) + 1; i <= dates.indexOf(posted_data.year) +
                         this.prev_next_months_count; i++) {
@@ -943,8 +943,8 @@ if((month_dates_x_axis.length < this.num_of_months_to_show+this.prev_next_months
                 }
 
                                     //    console.log(month_dates_x_axis_actual_on_graph);
-                    //            month_dates_x_axis.reverse();//reverse the array for dates earlier to later @potluri
-                    //            month_dates_x_axis_actual_on_graph.reverse();//reverse the array for dates earlier to later @potluri
+                    //            month_dates_x_axis.reverse();//reverse the array for dates earlier to later @SDevi
+                    //            month_dates_x_axis_actual_on_graph.reverse();//reverse the array for dates earlier to later @SDevi
                     //            month_dates_x_axis.splice(num_of_months_to_show, Number.MAX_VALUE);
                     //            month_dates_x_axis_actual_on_graph.splice(num_of_months_to_show, Number.MAX_VALUE);
 

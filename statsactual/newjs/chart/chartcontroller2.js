@@ -33,7 +33,7 @@ StatsControllers.controller("ChartController2", ['$scope',
 
         $scope.calculate_months_xaxis_next_in_pagination = function(posted_data, enddate) {
 
-            //        month_dates_x_axis.reverse();//reverse the array for dates earlier to later @potluri
+            //        month_dates_x_axis.reverse();//reverse the array for dates earlier to later @SDevi
             //            month_dates_x_axis_actual_on_graph.reverse();
             OUSChartClass.calculate_months_xaxis_next_in_pagination(posted_data, enddate, dates, month_dates_x_axis,
                     month_dates_x_axis_actual_on_graph, backenddata.result.usagedates);
@@ -41,8 +41,8 @@ StatsControllers.controller("ChartController2", ['$scope',
 
 
             //    console.log(month_dates_x_axis_actual_on_graph);
-            //            month_dates_x_axis.reverse();//reverse the array for dates earlier to later @potluri
-            //            month_dates_x_axis_actual_on_graph.reverse();//reverse the array for dates earlier to later @potluri
+            //            month_dates_x_axis.reverse();//reverse the array for dates earlier to later @SDevi
+            //            month_dates_x_axis_actual_on_graph.reverse();//reverse the array for dates earlier to later @SDevi
             //            month_dates_x_axis.splice(num_of_months_to_show, Number.MAX_VALUE);
             //            month_dates_x_axis_actual_on_graph.splice(num_of_months_to_show, Number.MAX_VALUE);
 
@@ -504,7 +504,7 @@ if(localenddate != '') localenddate = month_dates_x_axis[i];
 
 //**************************************************************************************************
 ////**************************************************************************************************
-//below is the actual flow of the program.@potluri vv imp********************************
+//below is the actual flow of the program.@SDevi vv imp********************************
 //**************************************************************************************************
 //**************************************************************************************************
 
@@ -711,7 +711,7 @@ $(".printheader").show();
   $(".footer").show();
 $(".printheader").hide();
         };
-        $scope.print_page = function() {//try to use this for print//@potluri this is used to print ************
+        $scope.print_page = function() {//try to use this for print//@SDevi this is used to print ************
               
 
 
