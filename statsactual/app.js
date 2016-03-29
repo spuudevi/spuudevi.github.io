@@ -82,6 +82,57 @@
                                 }]
                         }
                     }).
+                            
+                             when('/chart2', {
+                        templateUrl: 'partials/chart/chart2.php',
+                        controller: 'ChartController2',
+                        resolve: {
+                            auth: ["$q", "post_to_chart_properties", '$location', function($q, post_to_chart_properties, $location) {
+                                    
+                                    
+
+                                   
+                                }]
+                        }
+                    }).
+                                when('/dog', {
+                        templateUrl: 'partials/dog/dog.html',
+                        controller: 'DogController',
+                        resolve: {
+                            auth: ["$q", "post_to_chart_properties", '$location', function($q, post_to_chart_properties, $location) {
+                                    
+                                    
+
+                                   
+                                }]
+                        }
+                    }).
+                                        when('/lab', {
+                        templateUrl: 'partials/dog/lab.html',
+                        controller: 'LabController',
+                        resolve: {
+                            auth: ["$q", "post_to_chart_properties", '$location', function($q, post_to_chart_properties, $location) {
+                                    
+                                    
+
+                                   
+                                }]
+                        }
+                    }).
+                            
+                                        when('/chivava', {
+                        templateUrl: 'partials/dog/chivava.html',
+                        controller: 'ChivavaController',
+                        resolve: {
+                            auth: ["$q", "post_to_chart_properties", '$location',
+                                function($q, post_to_chart_properties, $location) {
+                                    
+                                    
+
+                                   
+                                }]
+                        }
+                    }).
                     when('/test', {
                         templateUrl: 'partials/test/test.php',
                         controller: 'TestController'

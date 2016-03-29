@@ -1,0 +1,22 @@
+<div header ></div>
+
+<div class="mainContent">
+    animal type is {{animaltype}}
+    
+    
+    <input type='text' ng-model ='calc.a'>
+    <input type='text' ng-model ='calc.b'>
+    
+    <button ng-click='multiply()'>multiply</button>
+    <button ng-click='add()'>add</button>
+    <button ng-click='subtract()'>subtract</button>
+    
+<!--    <div  >{{calc.result}}</div>-->
+    <div ng-show='calc.result'>
+       <div  >{{calc.a}}{{symbol}}{{calc.b}}={{calc.result}}</div>
+     <button ng-click='roundoff()'>round off the result</button>
+     <div  ng-show='calc.result2'>round off result is{{calc.result2}}</div>
+    </div>
+</div>
+
+<div footer></div>
