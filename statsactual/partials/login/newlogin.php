@@ -6,7 +6,7 @@
 
 <div id="loginPg" class="wrapper">
 	<div class="header">
-		<div class="hdrLogo"><a href="#"><img src="statsrep5_images/Scholastic-Stats-Rpt-hdr.png" alt="Thunderify Statistical Reporting" width="590" height="41" /></a></div>
+		<div class="hdrLogo"><a href="#"><img src="statsrep5_images/Scholastic-Stats-Rpt-hdr.png" alt=" Statistical Reporting" width="590" height="41" /></a></div>
     <!-- end .header --></div>
 	
   <div class="mainContent">
