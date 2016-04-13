@@ -1,0 +1,1032 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "This Template Will Create The TG Info In Action (IIIA) Server",
+    "Parameters": {
+        "environmentType": {
+            "Description": "Environment type. (d, s, u, p)",
+            "Type": "String",
+            "AllowedValues": [
+                "d",
+                "s",
+                "u",
+                "p"
+            ],
+            "ConstraintDescription": "Specify one of the value in description."
+        },
+        "awsAccessKeyID": {
+            "Description": "Access Key ID to use.",
+            "Type": "String",
+            "Default": "AKIAI5LZ5VL4LYLVLA6A"
+        },
+        "awsSecretAccessKey": {
+            "Description": "Secret Access Key.",
+            "Type": "String"
+        },
+        "iiiaAutoscaleServerGroupLbAZ": {
+            "Description": "Info In Action Auto Scale Server Group Load Balancer Availability Zones",
+            "Type": "CommaDelimitedList",
+            "Default": ""
+        },
+        "iiiaELBSubnetId": {
+            "Description": "Info In Action Elastic Load Balancer subnets",
+            "Type": "CommaDelimitedList",
+            "Default": ""
+        },
+        "iiiaAutoscaleServerGroupLbVPCZoneIdentifier": {
+            "Description": "Info In Action Auto Scale Server Group Load Balancer VPC Zone Identifier subnets",
+            "Type": "CommaDelimitedList",
+            "Default": ""
+        }
+    },
+    "Mappings": {
+        "SecurityGroups": {
+            "d": {
+                "TGWeb": "sg-a344b1c6",
+                "TGApp": "sg-40649125",
+                "TGDB": "sg-2144b144",
+                "TGPublic": ""
+            },
+            "s": {
+                "TGWeb": "sg-5d47b238",
+                "TGApp": "sg-d940b5bc",
+                "TGDB": "sg-c744b1a2",
+                "TGPublic": ""
+            },
+            "u": {
+                "TGWeb": "sg-ee47b28b",
+                "TGApp": "sg-8047b2e5",
+                "TGDB": "sg-4447b221",
+                "TGPublic": ""
+            },
+            "p": {
+                "TGWeb": "sg-da1c67bf",
+                "TGApp": "sg-1e73937b",
+                "TGDB": "sg-d07393b5",
+                "TGPublic": "sg-2eca294b"
+            }
+        },
+        "AutoscaleServerGroupLbConfig": {
+            "d": {
+                "min": "1",
+                "max": "1",
+                "desiredCapacity": "1"
+            },
+            "s": {
+                "min": "1",
+                "max": "1",
+                "desiredCapacity": "1"
+            },
+            "u": {
+                "min": "1",
+                "max": "1",
+                "desiredCapacity": "1"
+            },
+            "p": {
+                "min": "3",
+                "max": "3",
+                "desiredCapacity": "3"
+            }
+        },
+        "iiiaLbConfig": {
+            "d": {
+                "accessType": "internal"
+            },
+            "s": {
+                "accessType": "internal"
+            },
+            "u": {
+                "accessType": "internal"
+            },
+            "p": {
+                "accessType": "internet-facing"
+            }
+        },
+        "tgiiiaAutoscaleServerGroupLaunchConfigLb": {
+            "d": {
+                "InstanceType": "m1.medium"
+            },
+            "s": {
+                "InstanceType": "m1.medium"
+            },
+            "u": {
+                "InstanceType": "m1.medium"
+            },
+            "p": {
+                "InstanceType": "m1.medium"
+            }
+        },
+        "CommonParams": {
+            "d": {
+                "imageId": "ami-5524283c",
+                "kernelId": "aki-88aa75e1",
+                "keyName": "tg-keypair-d",
+                "publicKey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCbCAPixraGGx3OqciKuduDmWIpC+cKekr81GJbLG7EnS7zbYeV4o3WDHEUKdcANbLJh19swhBPHDwnndbCX9ftCzzbLwXO8DGS/KykZZlyauu6xRW6nR939ehKYu9ctQBeuyckFDwV1k4YX+v8obP71iV6JwhfNpn0RIqSsT10wNNJoK3VE/YTMfy/7WHgdGguidT9QSLQAkBMgzxNCQYhLra8JLprXEpMnRC/OqT/oKm4rLQtPNlYpBplTI2IejTkqKmNGpmu33nyNPMODvFhZ9thN1N+u9WWnkskzD0XcGl4jtJp+ABE43t7p3QQft8XKEe1VoyCvlpDUasc2C5P",
+                "gitBranch": "d"
+            },
+            "s": {
+                "imageId": "ami-5524283c",
+                "kernelId": "aki-88aa75e1",
+                "keyName": "tg-keypair-s",
+                "publicKey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCyXIFcCu0jH5wwsYBXdM2XH/KRDuF5xwr6aR1cEUd/5nNOXgFFXktn7DuqAx6PnkrnE+HxrjeKfvb3ru8tmizhhgWrYxpzmFvAHksok0QV10SsZQcoft5s7yd5KYluYMh9XHN+Vv6OYW0D5HA4023Lf0URo+RwQeLRCc+vYwvhFDW0XL6p7yo31bObX7XY3BoWS5c0TR7pyzB/iKilEN4Q2FA5uP7GKtymX0p18Z/GBotRbW8/HvRu7m16MbdZgTtNiFXE4Blrd5IMsgOOb+08iZE1h9gyZGwolEGj40NjUKKxvFJXCGFhkieV6VDw9/aChRW4GERjKm2nB1Dmi0+/",
+                "gitBranch": "s"
+            },
+            "u": {
+                "imageId": "ami-5524283c",
+                "kernelId": "aki-88aa75e1",
+                "keyName": "tg-keypair-u",
+                "publicKey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCMvY3dzB/7Foaru002eSGjyUnmWZjubQoLiVRq1UvhD73OaBD+ScnF+PpwsJPq+cVVMBD66r8gGEP5bvN5Nw4jD3PhvgaNEFBHoa95C3qg0LVCll07KLA+d3o3jMR8R8S2P9G37Ik7aj/YhsYrAeMhtU0h/2sgoU/tZ7dw9IYJmUxHGKzDk3/uXGiOq/OeehTZbVjeB3euE0Ck5HPUW7S4hsrPpMLo749Jjp/iExlnM2dTl3tFTWh0+YS+2usB6D+PXQ/JfAM64EJWFFf3qBnOlzrI/HDAtxUi3cgw6oE8V+w3TWOAySlMYoKOPpeBby5cojSar5mITrLoXSHlKSiv",
+                "gitBranch": "u"
+            },
+            "p": {
+                "imageId": "ami-5524283c",
+                "kernelId": "aki-88aa75e1",
+                "keyName": "tg-keypair-p",
+                "publicKey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDUVesavnjwO9vr16GlR0lGQ2xyBCjqXNoKdcpSfqdlVu3p496ROq9h+TRZ6OAzJPLqEsziOaN3vAw5gQUrCgnS9ptnNZmcpCug3tNTibdLhOAmVWaZzm6V0tveIiTQV889bjpdM2XtO9B3k4WEOVTk3iq6R20dmqQnuqbzVmcdUM4Yc1KfqV4I6vZ5RlnARiu9llxnLAtvEtZTDTKv5pTB/eM8Gs9Jb6N0/m2G+cctJ5jJc+TW4JNXkBk95cJ0iQS5y1jLXhuHMDvC5zB5LH3b4mg68dhi9OIqXKDKWBula1gSTnTWlcC10UnniQGZ0k5mvHEDE7qsySLdjMhsZ7gt",
+                "gitBranch": "master"
+            }
+        },
+        "CloudWatchSNSAlarmAction": {
+            "d": {
+                "SNSARN": "arn:aws:sns:us-east-1:352653738009:tg-latency-alert"
+            },
+            "s": {
+                "SNSARN": "arn:aws:sns:us-east-1:352653738009:tg-latency-alert"
+            },
+            "u": {
+                "SNSARN": "arn:aws:sns:us-east-1:352653738009:tg-latency-alert"
+            },
+            "p": {
+                "SNSARN": "arn:aws:sns:us-east-1:189339112108:tg-latency-alert"
+            }
+        }
+    },
+    "Conditions": {
+        "DeploymentS3bucketEnv": {
+            "Fn::Equals": [
+                {
+                    "Ref": "environmentType"
+                },
+                "p"
+            ]
+        },
+        "PublicSecurityGroup": {
+            "Fn::Equals": [
+                {
+                    "Ref": "environmentType"
+                },
+                "p"
+            ]
+        }
+    },
+    "Resources": {
+        "tgiiiaAutoscaleServerGroupLb": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "AvailabilityZones": {
+                    "Ref": "iiiaAutoscaleServerGroupLbAZ"
+                },
+                "DesiredCapacity": {
+                    "Fn::FindInMap": [
+                        "AutoscaleServerGroupLbConfig",
+                        {
+                            "Ref": "environmentType"
+                        },
+                        "desiredCapacity"
+                    ]
+                },
+                "LaunchConfigurationName": {
+                    "Ref": "tgiiiaAutoscaleServerGroupLaunchConfigLb"
+                },
+                "MinSize": {
+                    "Fn::FindInMap": [
+                        "AutoscaleServerGroupLbConfig",
+                        {
+                            "Ref": "environmentType"
+                        },
+                        "min"
+                    ]
+                },
+                "MaxSize": {
+                    "Fn::FindInMap": [
+                        "AutoscaleServerGroupLbConfig",
+                        {
+                            "Ref": "environmentType"
+                        },
+                        "max"
+                    ]
+                },
+                "LoadBalancerNames": [
+                    {
+                        "Ref": "tgiiiaLb"
+                    }
+                ],
+                "VPCZoneIdentifier": {
+                    "Ref": "iiiaAutoscaleServerGroupLbVPCZoneIdentifier"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "tg-iiia-",
+                                    {
+                                        "Ref": "environmentType"
+                                    }
+                                ]
+                            ]
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Application",
+                        "Value": "iiia",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "environmentType"
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Organization",
+                        "Value": "taag",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Role",
+                        "Value": "WEB",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Contact",
+                        "Value": "TAAGRelease@scholastic.com",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Asset",
+                        "Value": "Info in Action",
+                        "PropagateAtLaunch": "true"
+                    }
+                ]
+            }
+        },
+        "tgiiiaAutoscaleServerGroupLaunchConfigLb": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "packages": {
+                            "yum": {
+                                "git": [],
+                                "httpd": [],
+                                "php": [],
+                                "php-pear.noarch": [],
+                                "python-pip": []
+                            }
+                        },
+                        "files": {
+                            "/data/scripts/set_ntp.sh": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "#!/bin/sh\n",
+                                            "yum install ntp -y\n",
+                                            "chkconfig ntpd on\n",
+                                            "ntpdate pool.ntp.org\n",
+                                            "service ntpd start\n"
+                                        ]
+                                    ]
+                                },
+                                "mode": "000770",
+                                "owner": "root",
+                                "group": "root"
+                            },
+                            "/root/.aws/config": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "[default]\n",
+                                            "output=json\n",
+                                            "region=",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            "\n",
+                                            "aws_access_key_id=",
+                                            {
+                                                "Ref": "awsAccessKeyID"
+                                            },
+                                            "\n",
+                                            "aws_secret_access_key=",
+                                            {
+                                                "Ref": "awsSecretAccessKey"
+                                            },
+                                            "\n"
+                                        ]
+                                    ]
+                                },
+                                "mode": "000400",
+                                "owner": "root",
+                                "group": "root"
+                            },
+                            "/data/config.php": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "<?php\n",
+                                            "$aws_parameters = array();\n",
+                                            "tgtestAMI",
+                                            {
+                                                "Ref": "environmentType"
+                                            },
+                                            "';\n",
+                                            "$aws_parameters['awsAccessKeyID'] = '",
+                                            {
+                                                "Ref": "awsAccessKeyID"
+                                            },
+                                            "';\n",
+                                            "$aws_parameters['awsSecretAccessKey'] = '",
+                                            {
+                                                "Ref": "awsSecretAccessKey"
+                                            },
+                                            "';\n",
+                                            "?>"
+                                        ]
+                                    ]
+                                },
+                                "mode": "000550",
+                                "owner": "apache",
+                                "group": "apache"
+                            },
+                            "/root/.ssh/config": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "Host *github.com\n",
+                                            "Hostname github.com\n",
+                                            "PubkeyAuthentication yes\n",
+                                            "ForwardAgent yes\n",
+                                            "StrictHostKeyChecking no\n",
+                                            "IdentityFile ~/.ssh/tg-key"
+                                        ]
+                                    ]
+                                },
+                                "mode": "000500",
+                                "owner": "root",
+                                "group": "root"
+                            },
+                            "/root/.ssh/tg-key.pub": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "CommonParams",
+                                                    {
+                                                        "Ref": "environmentType"
+                                                    },
+                                                    "publicKey"
+                                                ]
+                                            }
+                                        ]
+                                    ]
+                                },
+                                "mode": "000644",
+                                "owner": "root",
+                                "group": "root"
+                            },
+                            "/data/scripts/setup_selinux_apache.sh": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "#!/bin/sh\n",
+                                            "setsebool -P httpd_can_network_connect=1\n",
+                                            "setsebool -P httpd_enable_homedirs=1\n",
+                                            "sed -ie \"\\$aInclude /data/apache/config/*.conf\" /etc/httpd/conf/httpd.conf\n",
+                                            "sed -ie \"s/^127.0.0.1.*$/& $(hostname)/\" /etc/hosts\n",
+                                            "#Bash Function To Create file And Directory If Not Exists.\n",
+                                            "mktouch() {\n",
+                                            "mkdir -p \"$(dirname \"$1\")\"\n",
+                                            "touch \"$1\"\n",
+                                            "}\n",
+                                            "mktouch /data/iiia1/logs/error.log\n",
+                                            "mktouch /data/iiia1/logs/access.log\n",
+                                            "semanage permissive -a httpd_t\n",
+                                            "service httpd restart\n"
+                                        ]
+                                    ]
+                                },
+                                "mode": "000770",
+                                "owner": "root",
+                                "group": "root"
+                            },
+                             "/data/scripts/spupull.sh": {
+                            "/data/scripts/clone_git_repo.sh": {
+                                git clone -b d ssh://git@github.com/scholastictaag/app-iiia /tempgit/
+                                        
+                            },
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "#!/bin/sh\n",
+                                            "rm -rf /data/.git/\n",
+                                            "rm -rf /data/iiia1/\n",
+                                            git clone -b d ssh://git@github.com/scholastictaag/app-iiia /tempgit/
+                                            "git clone -b ",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "CommonParams",
+                                                    {
+                                                        "Ref": "environmentType"
+                                                    },
+                                                    "gitBranch"
+                                                ]
+                                            },
+                                            " ssh://git@github.com/scholastictaag/app-iiia /tempgit/\n",
+                                            "cp -a /tempgit/.git /data/.git\n",
+                                            "cp -r /tempgit/* /data/\n",
+                                            "#Excluding directories/files\n",
+                                            "sed -ie \"\\$aapache/*\\naws-php/*\\ncommon/*\\nscripts/*\\niiia1/csdocs/\\niiia1/logs/\\nconfig.php\\niiia1/docs/ELBHealthCheck\\nmu-a9e453ec-49e36307-740bc9aa-68493069.txt\" /data/.git/info/exclude\n",
+                                            "rm -rf /tempgit/\n",
+                                            "chmod -R 0774 /data\n",
+                                            "mkdir -p /data/iiia1/csdocs/media/\n",
+                                            "chmod 0777 /data/iiia1/csdocs/media/\n",
+                                            "mkdir -p /data/iiia1/csdocs/text/\n",
+                                            "chmod 0777 /data/iiia1/csdocs/text/\n",
+                                            "mkdir -p /data/iiia1/csdocs/pdf/\n",
+                                            "chmod 0777 /data/iiia1/csdocs/pdf/\n",
+                                            "aws s3 cp s3://",
+                                            "tgdeploymgmt",
+                                            {
+                                                "Fn::If": [
+                                                    "DeploymentS3bucketEnv",
+                                                    {
+                                                        "Ref": "environmentType"
+                                                    },
+                                                    "d"
+                                                ]
+                                            },
+                                            "/config_files/performance_testing/ /data/iiia1/docs/ --recursive\n",
+                                            "echo 'This File is Getting Used For Performing ELB Health Check Operation.. This File Can Not Be Browsed or Deleted.. !!' > /data/iiia1/docs/ELBHealthCheck\n",
+                                            "mkdir -p /data/iiia1/logs/\n",
+                                            "chown -R apache:apache /data\n",
+                                            "service httpd restart"
+                                        ]
+                                    ]
+                                },
+                                "mode": "000770",
+                                "owner": "root",
+                                "group": "root"
+                            },
+                            "/data/scripts/clear_cache.sh": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "#!/bin/sh\n",
+                                            "rm -rf /data/iiia1/csdocs/\n",
+                                            "mkdir -p /data/iiia1/csdocs/media/\n",
+                                            "chmod 0777 /data/iiia1/csdocs/media/\n",
+                                            "mkdir -p /data/iiia1/csdocs/text/\n",
+                                            "chmod 0777 /data/iiia1/csdocs/text/\n",
+                                            "mkdir -p /data/iiia1/csdocs/pdf/\n",
+                                            "chmod 0777 /data/iiia1/csdocs/pdf/\n",
+                                            "service httpd restart\n"
+                                        ]
+                                    ]
+                                },
+                                "mode": "000770",
+                                "owner": "root",
+                                "group": "root"
+                            },
+                            "/data/scripts/authentication_installation.sh": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "#!/bin/sh\n",
+                                            "yum install php-gd.x86_64 -y\n",
+                                            "yum install gcc.x86_64 -y\n",
+                                            "yum install perl-libwww-perl -y\n",
+                                            "pear install XML_Serializer-0.20.2\n",
+                                            "#Deploy the 'grolier' Perl directory to: /usr/lib64/perl5/Apache2/\n",
+                                            "mkdir -p /usr/lib64/perl5/Apache2/\n",
+                                            "git clone ssh://git@github.com/scholastictaag/app-authclient /usr/lib64/perl5/Apache2/grolier/\n",
+                                            "rm -rf /usr/lib64/perl5/Apache2/grolier/GrolierDecode/SCCS\n",
+                                            "#Deploy the GrolierDecode.pm module to:  /usr/lib64/perl5/vendor_perl/\n",
+                                            "aws s3 cp s3://tgdeploymgmt",
+                                            {
+                                                "Fn::If": [
+                                                    "DeploymentS3bucketEnv",
+                                                    {
+                                                        "Ref": "environmentType"
+                                                    },
+                                                    "d"
+                                                ]
+                                            },
+                                            "/config_files/authentication/vendor_perl/GrolierDecode.pm /usr/lib64/perl5/vendor_perl/GrolierDecode.pm\n",
+                                            "cd /usr/lib64/perl5/Apache2/grolier/GrolierDecode\n",
+                                            "perl Makefile.PL\n",
+                                            "make all\n",
+                                            "make install\n"
+                                        ]
+                                    ]
+                                },
+                                "mode": "000770",
+                                "owner": "root",
+                                "group": "root"
+                            },
+                            "/data/scripts/get_config_files.sh": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "#!/bin/sh\n",
+                                            "aws s3 cp s3://tgdeploymgmt",
+                                            {
+                                                "Fn::If": [
+                                                    "DeploymentS3bucketEnv",
+                                                    {
+                                                        "Ref": "environmentType"
+                                                    },
+                                                    "d"
+                                                ]
+                                            },
+                                            "/config_files/iiia/vhosts/",
+                                            {
+                                                "Ref": "environmentType"
+                                            },
+                                            "/ /data/apache/config/ --recursive \n",
+                                            "chmod 0644 /data/apache/config/virtualhost_*.conf\n",
+                                            "aws s3 cp s3://",
+                                            "tgdeploymgmt",
+                                            {
+                                                "Fn::If": [
+                                                    "DeploymentS3bucketEnv",
+                                                    {
+                                                        "Ref": "environmentType"
+                                                    },
+                                                    "d"
+                                                ]
+                                            },
+                                            "/config_files/iiia/gi_product_config/ /data/common/config/ --recursive --exclude \"*\" --include \"*-",
+                                            {
+                                                "Ref": "environmentType"
+                                            },
+                                            "\"\n",
+                                            "mv /data/common/config/productConfig.json-",
+                                            {
+                                                "Ref": "environmentType"
+                                            },
+                                            " /data/common/config/productConfig.json\n",
+                                            "mv /data/common/config/GI_BaseHref.php-",
+                                            {
+                                                "Ref": "environmentType"
+                                            },
+                                            " /data/common/config/GI_BaseHref.php\n",
+                                            "chmod 0755 /data/common/config/productConfig.json\n",
+                                            "chmod 0644 /data/common/config/GI_BaseHref.php\n",
+                                            "aws s3 cp s3://",
+                                            "tgdeploymgmt",
+                                            {
+                                                "Fn::If": [
+                                                    "DeploymentS3bucketEnv",
+                                                    {
+                                                        "Ref": "environmentType"
+                                                    },
+                                                    "d"
+                                                ]
+                                            },
+                                            "/config_files/iiia/gi_product_config/GI_ProductConfig.php /data/common/config/GI_ProductConfig.php\n",
+                                            "aws s3 cp s3://",
+                                            "tgdeploymgmt",
+                                            {
+                                                "Fn::If": [
+                                                    "DeploymentS3bucketEnv",
+                                                    {
+                                                        "Ref": "environmentType"
+                                                    },
+                                                    "d"
+                                                ]
+                                            },
+                                            "/config_files/iiia/vhosts/ /data/apache/config/ --recursive --exclude \"*\" --include \"*common*\"\n",
+                                            "chmod 0755 /data/common/config/GI_ProductConfig.php\n",
+                                            "service httpd restart"
+                                        ]
+                                    ]
+                                },
+                                "mode": "000770",
+                                "owner": "root",
+                                "group": "root"
+                            },
+                            "/data/scripts/setup_cloudwatch_alarms.sh": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "#!/bin/sh\n",
+                                            "#Find This Ec2 Instance Local IP Address\n",
+                                            "INSTANCE_LOCAL_IP=`wget -q -O - http://169.254.169.254/latest/meta-data/local-ipv4`\n",
+                                            "#Find This Ec2 Instance ID\n",
+                                            "INSTANCE_ID=`wget -q -O - http://169.254.169.254/latest/meta-data/instance-id`\n",
+                                            "#Add CloudWatch Alarm to This EC2 Instance For Average CPU High Usage\n",
+                                            "aws cloudwatch put-metric-alarm --alarm-name \"awsEc2-IP-$INSTANCE_LOCAL_IP-tg-iiia-",
+                                            {
+                                                "Ref": "environmentType"
+                                            },
+                                            "-High-CPU-Utilization\" --alarm-description \"Average CPU Utilization is greater than or equal to 60% for 10 minutes\" --alarm-actions \"",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "CloudWatchSNSAlarmAction",
+                                                    {
+                                                        "Ref": "environmentType"
+                                                    },
+                                                    "SNSARN"
+                                                ]
+                                            },
+                                            "\" --metric-name \"CPUUtilization\" --namespace \"AWS/EC2\" --statistic \"Average\" --dimensions \"Name=InstanceId,Value=$INSTANCE_ID\" --period \"300\" --evaluation-periods \"2\" --threshold \"60.0\" --comparison-operator \"GreaterThanOrEqualToThreshold\" --actions-enabled 2>&1 > /tmp/setup_cloudwatch_alarms.log\n"
+                                        ]
+                                    ]
+                                },
+                                "mode": "000770",
+                                "owner": "root",
+                                "group": "root"
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties": {
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "CommonParams",
+                        {
+                            "Ref": "environmentType"
+                        },
+                        "imageId"
+                    ]
+                },
+                "SecurityGroups": [
+                    {
+                        "Fn::FindInMap": [
+                            "SecurityGroups",
+                            {
+                                "Ref": "environmentType"
+                            },
+                            "TGWeb"
+                        ]
+                    }
+                ],
+                "BlockDeviceMappings": [
+                    {
+                        "DeviceName": "/dev/sda",
+                        "Ebs": {
+                            "DeleteOnTermination": "true",
+                            "VolumeSize": "64",
+                            "VolumeType": "standard"
+                        }
+                    }
+                ],
+                "InstanceType": {
+                    "Fn::FindInMap": [
+                        "tgiiiaAutoscaleServerGroupLaunchConfigLb",
+                        {
+                            "Ref": "environmentType"
+                        },
+                        "InstanceType"
+                    ]
+                },
+                "KernelId": {
+                    "Fn::FindInMap": [
+                        "CommonParams",
+                        {
+                            "Ref": "environmentType"
+                        },
+                        "kernelId"
+                    ]
+                },
+                "KeyName": {
+                    "Fn::FindInMap": [
+                        "CommonParams",
+                        {
+                            "Ref": "environmentType"
+                        },
+                        "keyName"
+                    ]
+                },
+                "InstanceMonitoring": "false",
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/sh\n",
+                                "yum install htop -y\n",
+                                "easy_install https://pypi.python.org/packages/source/l/lockfile/lockfile-0.9.1.tar.gz#md5=ce61468d4c1263e3005737bbed2641f0\n",
+                                "easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz\n",
+                                "yum update ca-certificates -y\n",
+                                "/usr/bin/cfn-init -s ",
+                                {
+                                    "Ref": "AWS::StackName"
+                                },
+                                " -r tgiiiaAutoscaleServerGroupLaunchConfigLb\n",
+                                "echo \"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "CommonParams",
+                                        {
+                                            "Ref": "environmentType"
+                                        },
+                                        "publicKey"
+                                    ]
+                                },
+                                " ",
+                                {
+                                    "Fn::FindInMap": [
+                                        "CommonParams",
+                                        {
+                                            "Ref": "environmentType"
+                                        },
+                                        "keyName"
+                                    ]
+                                },
+                                "\" > ~/.ssh/authorized_keys\n",
+                                "/data/scripts/set_ntp.sh\n",
+                                "yum update openssl -y\n",
+                                "yum install mysql -y\n",
+                                "yum install ruby -y\n",
+                                "yum install python -y\n",
+                                "yum install php-pdo -y\n",
+                                "yum install php-mysqli -y\n",
+                                "yum install php-mbstring -y\n",
+                                "yum install php-mcrypt -y\n",
+                                "yum install mlocate -y\n",
+                                "yum update bash -y\n",
+                                "pear config-set auto_discover 1\n",
+                                "pear channel-discover pear.amazonwebservices.com\n",
+                                "pear install aws/sdk\n",
+                                "pip install awscli\n",
+                                "pip install --upgrade awscli\n",
+                                "pear install Mail-1.2.0\n",
+                                "pear install Net_SMTP\n",
+                                "cd /tmp\n",
+                                "git clone https://github.com/awslabs/aws-php-sample.git\n",
+                                "cp -rp /tmp/aws-php-sample /data\n",
+                                "mv /data/aws-php-sample /data/aws-php\n",
+                                "cd /data/aws-php\n",
+                                "wget https://getcomposer.org/installer\n",
+                                "php installer\n",
+                                "rm -f installer\n",
+                                "export COMPOSER_HOME=/data/aws-php\n",
+                                "cd /data/aws-php\n",
+                                "php composer.phar install\n",
+                                "chown -R apache:apache /data/aws-php\n",
+                                "chown -R apache:apache /var/www/html\n",
+                                "chkconfig --add httpd\n",
+                                "chkconfig httpd on\n",
+                                "yum install mod_perl.x86_64 -y\n",
+                                "pear install SOAP-0.13.0\n",
+                                "pear install DB-1.7.14\n",
+                                "service httpd restart\n",
+                                "yum install php-soap -y\n",
+                                "yum install php-xml -y\n",
+                                "yum install xcb-util -y\n",
+                                "aws s3 cp s3://",
+                                "tgdeploymgmt",
+                                {
+                                    "Fn::If": [
+                                        "DeploymentS3bucketEnv",
+                                        {
+                                            "Ref": "environmentType"
+                                        },
+                                        "d"
+                                    ]
+                                },
+                                "/keys/tg-keypair-",
+                                {
+                                    "Ref": "environmentType"
+                                },
+                                " ~/.ssh/tg-key\n",
+                                "chmod 0500 ~/.ssh/tg-key\n",
+                                "chmod 0700 ~/.ssh\n",
+                                "service httpd start\n",
+                                "/data/scripts/clone_git_repo.sh\n",
+                                "spupull.sh"
+                                "service iptables stop\n",
+                                "iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT\n",
+                                "service iptables save\n",
+                                "service iptables start\n",
+                                "/data/scripts/get_config_files.sh\n",
+                                "/data/scripts/authentication_installation.sh\n",
+                                "/data/scripts/setup_selinux_apache.sh\n",
+                                "#Install CloudHealth Agent\n",
+                                "wget https://s3.amazonaws.com/remote-collector/agent/v14/install_cht_perfmon.sh -O /tmp/install_cht_perfmon.sh\n",
+                                "sh /tmp/install_cht_perfmon.sh 14 3d0f4c10-4596-0132-741f-22000b0e0077 aws\n",
+                                "ionice -c3 updatedb\n",
+                                "/data/scripts/setup_cloudwatch_alarms.sh\n"
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+        "tgiiiaLb": {
+            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties": {
+                "Subnets": {
+                    "Ref": "iiiaELBSubnetId"
+                },
+                "HealthCheck": {
+                    "HealthyThreshold": "10",
+                    "Interval": "30",
+                    "Target": "HTTP:80/ELBHealthCheck",
+                    "Timeout": "5",
+                    "UnhealthyThreshold": "2"
+                },
+                "SecurityGroups": [
+                    {
+                        "Fn::FindInMap": [
+                            "SecurityGroups",
+                            {
+                                "Ref": "environmentType"
+                            },
+                            "TGWeb"
+                        ]
+                    },
+                    {
+                        "Fn::If": [
+                            "PublicSecurityGroup",
+                            {
+                                "Fn::FindInMap": [
+                                    "SecurityGroups",
+                                    {
+                                        "Ref": "environmentType"
+                                    },
+                                    "TGPublic"
+                                ]
+                            },
+                            {
+                                "Fn::FindInMap": [
+                                    "SecurityGroups",
+                                    {
+                                        "Ref": "environmentType"
+                                    },
+                                    "TGWeb"
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "CrossZone": "true",
+                "Listeners": [
+                    {
+                        "InstancePort": "80",
+                        "LoadBalancerPort": "80",
+                        "Protocol": "HTTP",
+                        "InstanceProtocol": "HTTP"
+                    }
+                ],
+                "Scheme": {
+                    "Fn::FindInMap": [
+                        "iiiaLbConfig",
+                        {
+                            "Ref": "environmentType"
+                        },
+                        "accessType"
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "tg-iiia-",
+                                    {
+                                        "Ref": "environmentType"
+                                    }
+                                ]
+                            ]
+                        }
+                    },
+                    {
+                        "Key": "Application",
+                        "Value": "iiia"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "environmentType"
+                        }
+                    },
+                    {
+                        "Key": "Organization",
+                        "Value": "taag"
+                    },
+                    {
+                        "Key": "Role",
+                        "Value": "LB"
+                    },
+                    {
+                        "Key": "Contact",
+                        "Value": "TAAGRelease@scholastic.com"
+                    },
+                    {
+                        "Key": "Asset",
+                        "Value": "Info in Action"
+                    }
+                ]
+            }
+        },
+        "tgiiiaCPUAlarmELB": {
+            "Type": "AWS::CloudWatch::Alarm",
+            "DependsOn": "tgiiiaLb",
+            "Properties": {
+                "AlarmDescription": "Average Latency is more than or equal to 750 Milliseconds for 10 minutes",
+                "AlarmName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "awsELB-tg-iiia-",
+                            {
+                                "Ref": "environmentType"
+                            },
+                            "-High-Average-Latency"
+                        ]
+                    ]
+                },
+                "MetricName": "Latency",
+                "Namespace": "AWS/ELB",
+                "Statistic": "Average",
+                "Period": "300",
+                "EvaluationPeriods": "2",
+                "Threshold": "0.75",
+                "AlarmActions": [
+                    {
+                        "Fn::FindInMap": [
+                            "CloudWatchSNSAlarmAction",
+                            {
+                                "Ref": "environmentType"
+                            },
+                            "SNSARN"
+                        ]
+                    }
+                ],
+                "Dimensions": [
+                    {
+                        "Name": "LoadBalancerName",
+                        "Value": {
+                            "Ref": "tgiiiaLb"
+                        }
+                    }
+                ],
+                "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+                "ActionsEnabled": true
+            }
+        }
+    },
+    "Outputs": {
+        "iiiaLoadBalancerLink": {
+            "Description": "Info In Action Load Balancer Link",
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "http://",
+                        {
+                            "Fn::GetAtt": [
+                                "tgiiiaLb",
+                                "DNSName"
+                            ]
+                        }
+                    ]
+                ]
+            }
+        },
+        "iiiaELBCloudWatchAlarm": {
+            "Description": "Info In Action ELB High Average Latency CloudWatch Alarm",
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        {
+                            "Ref": "tgiiiaCPUAlarmELB"
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+}
